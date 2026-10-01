@@ -32,13 +32,13 @@ const codebuddyVscodePlatformConfig: CodebuddySuiteAccountsPlatformConfig<Codebu
     titleDefault: 'CodeBuddy VSCode 插件版说明（点击展开/收起）',
     descKey: 'codebuddyVscode.flowNotice.desc',
     descDefault:
-      '此平台用于切换 VS Code 本体里 CodeBuddy 扩展的登录账号：读取/回写 VS Code 的 state.vscdb 登录态，数据仅在本地处理。账号与 CodeBuddy（桌面 IDE）共用同一份账号池。',
+      '此平台用于切换 VS Code 本体里 CodeBuddy 扩展的登录账号：读取/回写 VS Code 的 state.vscdb 登录态，数据仅在本地处理。走国内版站点，账号与 CodeBuddy CN（国内版）共用同一份账号池。',
     permissionKey: 'codebuddyVscode.flowNotice.permission',
     permissionDefault:
       '权限范围：读取并回写 VS Code 认证数据库 (state.vscdb)，调用系统凭据能力（macOS Keychain / Windows DPAPI / Linux Secret Service）进行解密/加密。',
     networkKey: 'codebuddyVscode.flowNotice.network',
     networkDefault:
-      '网络范围：OAuth 授权登录与 Token 刷新需联网请求 codebuddy.ai 与计费接口。不上传本地密钥或凭证。',
+      '网络范围：OAuth 授权登录与 Token 刷新需联网请求 codebuddy.cn 与计费接口。不上传本地密钥或凭证。',
   },
   noAccountsKey: 'codebuddyVscode.noAccounts',
   noAccountsDefault: '暂无 CodeBuddy 账号',

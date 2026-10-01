@@ -117,6 +117,10 @@ jobs:
             echo
             echo "基于本 fork（tuple97/cockpit-tools）构建，新增 **CodeBuddy VSCode 插件版** 子平台，用于切换 VS Code 中 CodeBuddy 扩展的登录账号。"
             echo
+            echo "### 本次更新"
+            echo "- CodeBuddy VSCode 平台改为走**国内版（codebuddy.cn）**站点：登录授权、Token 刷新与配额查询均使用国内版接口，账号池与 CodeBuddy CN 共用。"
+            echo "- 托盘菜单新增 **CodeBuddy VSCode** 平台入口，可直接查看当前登录账号与配额。"
+            echo
             echo "### 安装说明"
             echo "- Windows：下载并运行 \`.exe\`（NSIS 安装包，按当前用户安装）或 \`.msi\`。"
             echo "- 该构建未签名，Windows SmartScreen 可能提示，请选择「仍要运行」。"

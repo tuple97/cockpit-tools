@@ -687,6 +687,7 @@
             | PlatformId::TraeSoloCn => build_trae_cards(lang, platform),
             PlatformId::Codebuddy => build_codebuddy_cards(lang),
             PlatformId::CodebuddyCn => build_codebuddy_cn_cards(lang),
+            PlatformId::CodebuddyVscode => build_codebuddy_vscode_cards(lang),
             PlatformId::Workbuddy => build_workbuddy_cards(lang),
             PlatformId::Zed => build_zed_cards(lang),
         }
@@ -2112,6 +2113,18 @@
                 }
             })
             .collect();
+        (cards, current_id, None)
+    }
+
+    /// VS Code 插件版：账号池与国内版共用，当前账号以 VS Code 中的登录态为准。
+    fn build_codebuddy_vscode_cards(
+        lang: &str,
+    ) -> (Vec<AccountCard>, Option<String>, Option<String>) {
+        let (cards, _, _) = build_codebuddy_cn_cards(lang);
+        let accounts = modules::codebuddy_cn_account::list_accounts();
+        let current_id = modules::codebuddy_vscode::resolve_current_account_id(&accounts)
+            .ok()
+            .flatten();
         (cards, current_id, None)
     }
 

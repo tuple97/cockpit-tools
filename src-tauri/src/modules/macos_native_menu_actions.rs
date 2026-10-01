@@ -316,6 +316,17 @@ fn spawn_refresh(platform: PlatformId, account_id: Option<String>) {
             (PlatformId::CodebuddyCn, None) => {
                 commands::codebuddy_cn::refresh_all_codebuddy_cn_tokens(app.clone()).await
             }
+            (PlatformId::CodebuddyVscode, Some(account_id)) => {
+                commands::codebuddy_vscode::refresh_codebuddy_vscode_token(
+                    app.clone(),
+                    account_id,
+                )
+                .await
+                .map(|_| 0)
+            }
+            (PlatformId::CodebuddyVscode, None) => {
+                commands::codebuddy_vscode::refresh_all_codebuddy_vscode_tokens(app.clone()).await
+            }
             (PlatformId::Qoder, Some(account_id)) => {
                 commands::qoder::refresh_qoder_token(app.clone(), account_id)
                     .await
@@ -432,6 +443,11 @@ fn spawn_switch_account(platform: PlatformId, account_id: String) {
             }
             PlatformId::CodebuddyCn => {
                 commands::codebuddy_cn::inject_codebuddy_cn_to_vscode(app, account_id)
+                    .await
+                    .map(|_| ())
+            }
+            PlatformId::CodebuddyVscode => {
+                commands::codebuddy_vscode::inject_codebuddy_vscode_account(app, account_id)
                     .await
                     .map(|_| ())
             }

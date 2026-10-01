@@ -6727,9 +6727,9 @@
     "tokenDesc": "粘贴 CodeBuddy 的 access token：",
     "flowNotice": {
       "title": "CodeBuddy VSCode 插件版说明（点击展开/收起）",
-      "desc": "此平台用于切换 VS Code 本体里 CodeBuddy 扩展的登录账号：读取/回写 VS Code 的 state.vscdb 登录态，数据仅在本地处理。账号与 CodeBuddy（桌面 IDE）共用同一份账号池。",
+      "desc": "此平台用于切换 VS Code 本体里 CodeBuddy 扩展的登录账号：读取/回写 VS Code 的 state.vscdb 登录态，数据仅在本地处理。走国内版站点，账号与 CodeBuddy CN（国内版）共用同一份账号池。",
       "permission": "权限范围：读取并回写 VS Code 认证数据库 (state.vscdb)，调用系统凭据能力（macOS Keychain / Windows DPAPI / Linux Secret Service）进行解密/加密。",
-      "network": "网络范围：OAuth 授权登录与 Token 刷新需联网请求 codebuddy.ai 与计费接口。不上传本地密钥或凭证。"
+      "network": "网络范围：OAuth 授权登录与 Token 刷新需联网请求 codebuddy.cn 与计费接口。不上传本地密钥或凭证。"
     },
     "import": {
       "localDesc": "支持从本机 VS Code 的 CodeBuddy 扩展或 JSON 文件导入账号数据。切换账号后需要重新加载 VS Code 窗口生效。",

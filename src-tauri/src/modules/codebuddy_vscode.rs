@@ -1,8 +1,9 @@
 //! CodeBuddy VSCode 插件版平台支持。
 //!
-//! 与 `codebuddy`（CodeBuddy 桌面 IDE）共用同一份账号池，区别在于登录态落点：
-//! 桌面 IDE 用 `<data>\CodeBuddy\User\globalStorage\state.vscdb` +
-//! Keychain "CodeBuddy Safe Storage"；VS Code 插件版用
+//! 与 `codebuddy_cn`（CodeBuddy 国内版桌面 IDE）共用同一份账号池（登录 / 刷新走
+//! codebuddy.cn），区别在于登录态落点：
+//! 桌面 IDE 用 `<data>\CodeBuddy CN\User\globalStorage\state.vscdb` +
+//! Keychain "CodeBuddy CN Safe Storage"；VS Code 插件版用
 //! `%APPDATA%\Code\User\globalStorage\state.vscdb` + Keychain "Code Safe Storage"，
 //! 且 secret 条目 key 也不同（`Tencent-Cloud.coding-copilot.new.accessToken`），
 //! 因此单独成模块，只在「读写 VS Code 登录态」上做定制。
@@ -228,7 +229,7 @@ fn build_vscode_session_json(account: &CodebuddyAccount, existing: Option<&str>)
 ///
 /// 返回被切换账号的邮箱，便于前端直接展示提示。
 pub fn inject_account_to_vscode(account_id: &str) -> Result<String, String> {
-    let account = crate::modules::codebuddy_account::load_account(account_id)
+    let account = crate::modules::codebuddy_cn_account::load_account(account_id)
         .ok_or_else(|| format!("CodeBuddy 账号不存在: {}", account_id))?;
 
     let data_root = vscode_data_root()?;
