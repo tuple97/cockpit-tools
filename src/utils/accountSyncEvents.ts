@@ -38,6 +38,8 @@ const PROVIDER_PAGE_PLATFORM_MAP: Record<string, PlatformId> = {
   codebuddy: 'codebuddy',
   codebuddycn: 'codebuddy_cn',
   codebuddy_cn: 'codebuddy_cn',
+  codebuddyvscode: 'codebuddy_vscode',
+  codebuddy_vscode: 'codebuddy_vscode',
   qoder: 'qoder',
   zcode: 'zcode',
   trae: 'trae',

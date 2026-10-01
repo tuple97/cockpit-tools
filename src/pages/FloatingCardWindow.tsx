@@ -214,6 +214,9 @@ function resolveInstanceStoreApi(platformId: PlatformId): FloatingCardInstanceSt
       return useCodebuddyInstanceStore.getState();
     case 'codebuddy_cn':
       return useCodebuddyCnInstanceStore.getState();
+    case 'codebuddy_vscode':
+      // VSCode 插件版没有「应用多开」概念
+      return null;
     case 'qoder':
       return useQoderInstanceStore.getState();
     case 'trae':

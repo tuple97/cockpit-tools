@@ -484,6 +484,7 @@
     "traeCn": "Trae CN",
     "traeSoloCn": "TRAE SOLO CN",
     "codebuddyCn": "CodeBuddy CN",
+    "codebuddyVscode": "CodeBuddy VSCode",
     "switchClassicLayoutEntry": "Switch to classic layout",
     "switchClassicLayoutTitle": "Switch to the classic sidebar layout",
     "switchClassicLayoutDesc": "The classic layout shows the full platform navigation and supports sidebar collapsing. You can switch back anytime in Settings > General > Sidebar Layout.",
@@ -6716,6 +6717,29 @@
     "syncFailed": "Sync failed: {{error}}",
     "syncSuccess": "{{count}} account(s) synced to WorkBuddy",
     "syncToWorkbuddy": "Sync to WorkBuddy"
+  },
+  "codebuddyVscode": {
+    "title": "CodeBuddy VSCode Account",
+    "noAccounts": "No CodeBuddy accounts",
+    "addAccount": "Add CodeBuddy Account",
+    "search": "Search CodeBuddy accounts...",
+    "oauthDesc": "Click the button below to open the CodeBuddy authorization page in your browser.",
+    "tokenDesc": "Paste your CodeBuddy access token:",
+    "flowNotice": {
+      "title": "CodeBuddy VSCode Info (click to expand/collapse)",
+      "desc": "This platform switches the account used by the CodeBuddy extension inside VS Code itself: it reads and writes the VS Code state.vscdb sign-in state, processed locally only. Accounts are shared with CodeBuddy (desktop IDE).",
+      "permission": "Permission scope: read and write the VS Code auth database (state.vscdb), call system credential capabilities (macOS Keychain / Windows DPAPI / Linux Secret Service) for decrypt/encrypt.",
+      "network": "Network scope: OAuth login and token refresh require network requests to codebuddy.ai and billing APIs. No local keys or credentials are uploaded."
+    },
+    "import": {
+      "localDesc": "Import account data from the CodeBuddy extension in local VS Code or a JSON file. Reload the VS Code window after switching accounts.",
+      "localClient": "Import from local VS Code"
+    },
+    "env": {
+      "noStateDb": "VS Code sign-in database not found: ",
+      "noSecret": "CodeBuddy extension sign-in state not found in VS Code: ",
+      "hint": "Install and sign in to the CodeBuddy extension in VS Code once, then use the switch feature."
+    }
   },
   "workbuddy": {
     "title": "WorkBuddy Account",

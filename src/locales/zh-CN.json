@@ -484,6 +484,7 @@
     "traeCn": "Trae CN",
     "traeSoloCn": "TRAE SOLO CN",
     "codebuddyCn": "CodeBuddy CN",
+    "codebuddyVscode": "CodeBuddy VSCode",
     "switchClassicLayoutEntry": "切换到经典布局",
     "switchClassicLayoutTitle": "切换至经典侧边栏布局",
     "switchClassicLayoutDesc": "经典布局将展示完整平台导航，并支持可折叠侧边栏。你可在“设置 > 通用 > 侧边栏布局”中随时切换回原始布局。",
@@ -6716,6 +6717,29 @@
     "syncFailed": "同步失败: {{error}}",
     "syncSuccess": "成功同步 {{count}} 个账号到 WorkBuddy",
     "syncToWorkbuddy": "同步到 WorkBuddy"
+  },
+  "codebuddyVscode": {
+    "title": "CodeBuddy VSCode 插件版账号管理",
+    "noAccounts": "暂无 CodeBuddy 账号",
+    "addAccount": "添加 CodeBuddy 账号",
+    "search": "搜索 CodeBuddy 账号...",
+    "oauthDesc": "点击下方按钮将在浏览器中打开 CodeBuddy 授权页面。",
+    "tokenDesc": "粘贴 CodeBuddy 的 access token：",
+    "flowNotice": {
+      "title": "CodeBuddy VSCode 插件版说明（点击展开/收起）",
+      "desc": "此平台用于切换 VS Code 本体里 CodeBuddy 扩展的登录账号：读取/回写 VS Code 的 state.vscdb 登录态，数据仅在本地处理。账号与 CodeBuddy（桌面 IDE）共用同一份账号池。",
+      "permission": "权限范围：读取并回写 VS Code 认证数据库 (state.vscdb)，调用系统凭据能力（macOS Keychain / Windows DPAPI / Linux Secret Service）进行解密/加密。",
+      "network": "网络范围：OAuth 授权登录与 Token 刷新需联网请求 codebuddy.ai 与计费接口。不上传本地密钥或凭证。"
+    },
+    "import": {
+      "localDesc": "支持从本机 VS Code 的 CodeBuddy 扩展或 JSON 文件导入账号数据。切换账号后需要重新加载 VS Code 窗口生效。",
+      "localClient": "从本机 VS Code 导入"
+    },
+    "env": {
+      "noStateDb": "未检测到 VS Code 登录数据库：",
+      "noSecret": "未检测到 VS Code 中 CodeBuddy 扩展的登录态：",
+      "hint": "请先在 VS Code 中安装并登录一次 CodeBuddy 扩展，再使用切换功能。"
+    }
   },
   "workbuddy": {
     "title": "WorkBuddy 账号管理",

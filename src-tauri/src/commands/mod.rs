@@ -8,6 +8,7 @@ pub mod codebuddy_cn;
 pub mod codebuddy_cn_instance;
 pub mod codebuddy_instance;
 pub mod codebuddy_session;
+pub mod codebuddy_vscode;
 pub mod codex;
 pub mod codex_proxy_engine;
 pub mod codex_unified_proxy;

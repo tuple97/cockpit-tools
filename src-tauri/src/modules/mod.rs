@@ -22,6 +22,7 @@ pub mod codebuddy_instance;
 pub mod codebuddy_oauth;
 pub mod codebuddy_session;
 pub mod codebuddy_session_transfer;
+pub mod codebuddy_vscode;
 pub mod codex_account;
 pub mod codex_account_proxy;
 pub mod codex_proxy_probe;

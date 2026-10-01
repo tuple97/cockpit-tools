@@ -1062,7 +1062,7 @@ pub fn get_default_codebuddy_state_db_path() -> Option<PathBuf> {
         .map(|d| d.join("User").join("globalStorage").join("state.vscdb"))
 }
 
-fn parse_local_access_token(value: &Value) -> Option<String> {
+pub(crate) fn parse_local_access_token(value: &Value) -> Option<String> {
     match value {
         Value::String(s) => {
             let trimmed = s.trim();
@@ -1113,7 +1113,7 @@ fn parse_local_access_token(value: &Value) -> Option<String> {
     }
 }
 
-fn normalize_local_codebuddy_token(token: &str) -> Option<String> {
+pub(crate) fn normalize_local_codebuddy_token(token: &str) -> Option<String> {
     let trimmed = token.trim();
     if trimmed.is_empty() {
         return None;
@@ -1127,7 +1127,7 @@ fn normalize_local_codebuddy_token(token: &str) -> Option<String> {
     Some(trimmed.to_string())
 }
 
-fn extract_local_codebuddy_token_parts(token: &str) -> Option<(Option<String>, String)> {
+pub(crate) fn extract_local_codebuddy_token_parts(token: &str) -> Option<(Option<String>, String)> {
     let trimmed = token.trim();
     if trimmed.is_empty() {
         return None;
@@ -1184,7 +1184,7 @@ fn json_object_i64_field(obj: &serde_json::Map<String, Value>, keys: &[&str]) ->
     None
 }
 
-fn build_local_import_payload(
+pub(crate) fn build_local_import_payload(
     access_token: String,
     parsed_json: Option<Value>,
     uid_from_token: Option<String>,
@@ -1328,7 +1328,7 @@ pub fn import_payload_from_local() -> Result<Option<CodebuddyOAuthCompletePayloa
     Ok(Some(payload))
 }
 
-fn build_default_client_session_json(account: &CodebuddyAccount) -> String {
+pub(crate) fn build_default_client_session_json(account: &CodebuddyAccount) -> String {
     let uid = account.uid.as_deref().unwrap_or("");
     let nickname = account.nickname.as_deref().unwrap_or("");
     let enterprise_id = account.enterprise_id.as_deref().unwrap_or("");

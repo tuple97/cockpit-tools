@@ -44,6 +44,8 @@ export function getPlatformLabel(platformId: PlatformId, _t: TFunction): string 
       return 'CodeBuddy';
     case 'codebuddy_cn':
       return _t('nav.codebuddyCn', 'CodeBuddy CN');
+    case 'codebuddy_vscode':
+      return _t('nav.codebuddyVscode', 'CodeBuddy VSCode');
     case 'qoder':
       return _t('nav.qoder', 'Qoder');
     case 'zcode':
@@ -90,6 +92,8 @@ export function renderPlatformIcon(platformId: PlatformId, size = 20): ReactNode
     case 'codebuddy':
       return <CodebuddyIcon style={{ width: size, height: size }} />;
     case 'codebuddy_cn':
+      return <CodebuddyIcon style={{ width: size, height: size }} />;
+    case 'codebuddy_vscode':
       return <CodebuddyIcon style={{ width: size, height: size }} />;
     case 'qoder':
       return <QoderIcon style={{ width: size, height: size }} />;

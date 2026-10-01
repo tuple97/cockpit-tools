@@ -948,6 +948,137 @@ fn read_secret_storage_value_with_data_root_and_mode(
     }
 }
 
+/// 在 state.vscdb 的 ItemTable 中按 LIKE 模式查找 secret 条目 key。
+///
+/// SQLite 的 LIKE 对 ASCII 大小写不敏感，因此可以兼容各宿主 / 版本里
+/// 大小写不一致的 extensionId 与密钥名。
+fn find_item_table_keys_like(db_path: &Path, patterns: &[&str]) -> Result<Vec<String>, String> {
+    if !db_path.exists() {
+        return Ok(Vec::new());
+    }
+
+    let conn = Connection::open(db_path).map_err(|e| {
+        format!(
+            "Failed to open VS Code database {}: {}",
+            db_path.display(),
+            e
+        )
+    })?;
+
+    let mut keys: Vec<String> = Vec::new();
+    for pattern in patterns {
+        // ItemTable 不存在（VS Code 从未初始化过）时 prepare 会失败，直接视为没有条目。
+        let Ok(mut stmt) = conn.prepare("SELECT key FROM ItemTable WHERE key LIKE ?1") else {
+            continue;
+        };
+        let Ok(rows) = stmt.query_map([*pattern], |row| row.get::<_, String>(0)) else {
+            continue;
+        };
+        for key in rows.flatten() {
+            if !keys.iter().any(|existing| existing == &key) {
+                keys.push(key);
+            }
+        }
+    }
+
+    Ok(keys)
+}
+
+/// 读取指定 state.vscdb 中某个 secret 条目（完整 ItemTable key）的解密明文。
+fn read_secret_value_by_item_key(
+    db_path: &Path,
+    data_root: Option<&Path>,
+    item_key: &str,
+    mode: SafeStorageReadMode,
+) -> Result<Option<String>, String> {
+    if !db_path.exists() {
+        return Ok(None);
+    }
+
+    let conn = Connection::open(db_path).map_err(|e| {
+        format!(
+            "Failed to open VS Code database {}: {}",
+            db_path.display(),
+            e
+        )
+    })?;
+    let raw_value: Option<String> = match conn.query_row(
+        "SELECT value FROM ItemTable WHERE key = ?1",
+        [item_key],
+        |row| row.get(0),
+    ) {
+        Ok(value) => Some(value),
+        Err(rusqlite::Error::QueryReturnedNoRows) => None,
+        Err(err) => {
+            return Err(format!(
+                "Failed to query VS Code secret '{}' in {}: {}",
+                item_key,
+                db_path.display(),
+                err
+            ))
+        }
+    };
+
+    match raw_value {
+        Some(value) => decode_secret_storage_value_with_mode(&value, data_root, mode).map(Some),
+        None => Ok(None),
+    }
+}
+
+/// 在 VS Code 用户数据目录的 state.vscdb 中查找 CodeBuddy 扩展的 secret 条目 key。
+///
+/// 不同宿主 / 版本写入的 key 形态不同（CodeBuddy 桌面 IDE 用
+/// `planning-genie.new.accessToken`，VS Code 扩展用
+/// `Tencent-Cloud.coding-copilot.new.accessToken`），因此先用 LIKE 模糊匹配，
+/// 再按 `prefer_substrings` 的优先级挑选；读到的 key 会原样用于回写，避免猜错 key。
+pub fn find_codebuddy_secret_item_key(
+    data_root: &Path,
+    patterns: &[&str],
+    prefer_substrings: &[&str],
+) -> Result<Option<String>, String> {
+    let db_path = data_root
+        .join("User")
+        .join("globalStorage")
+        .join("state.vscdb");
+    let keys = find_item_table_keys_like(&db_path, patterns)?;
+    if keys.is_empty() {
+        return Ok(None);
+    }
+
+    for prefer in prefer_substrings {
+        let needle = prefer.to_ascii_lowercase();
+        if let Some(key) = keys
+            .iter()
+            .find(|key| key.to_ascii_lowercase().contains(&needle))
+        {
+            return Ok(Some(key.clone()));
+        }
+    }
+
+    Ok(Some(keys[0].clone()))
+}
+
+/// 读取 VS Code 用户数据目录下某个 secret 条目（完整 ItemTable key）的明文。
+///
+/// 与 `read_codebuddy_secret_storage_value` 的区别：后者用于 CodeBuddy 桌面 IDE
+/// （Keychain "CodeBuddy Safe Storage"），本函数用于 VS Code 本体
+/// （Keychain "Code Safe Storage"，即 Default 模式的密钥来源）。
+pub fn read_vscode_secret_value_by_item_key(
+    data_root: &Path,
+    item_key: &str,
+) -> Result<Option<String>, String> {
+    let db_path = data_root
+        .join("User")
+        .join("globalStorage")
+        .join("state.vscdb");
+    read_secret_value_by_item_key(
+        &db_path,
+        Some(data_root),
+        item_key,
+        SafeStorageReadMode::Default,
+    )
+}
+
 pub fn read_antigravity_secret_storage_value(
     extension_id: &str,
     key: &str,
@@ -1258,6 +1389,18 @@ pub fn inject_secret_to_state_db_for_workbuddy(
         plaintext,
         SafeStorageReadMode::WorkBuddyOnly,
     )
+}
+
+/// 以 VS Code 家族的 Safe Storage 密钥（Default 模式）写入 secret 条目。
+///
+/// CodeBuddy 桌面 IDE 使用 `CodeBuddyOnly`（Keychain "CodeBuddy Safe Storage"），
+/// VS Code 本体使用 "Code Safe Storage"，两者密钥不同，必须区分模式。
+pub fn inject_secret_to_state_db_for_vscode(
+    db_path: &std::path::Path,
+    db_key: &str,
+    plaintext: &str,
+) -> Result<(), String> {
+    inject_secret_to_state_db_with_mode(db_path, db_key, plaintext, SafeStorageReadMode::Default)
 }
 
 fn inject_secret_to_state_db_with_mode(

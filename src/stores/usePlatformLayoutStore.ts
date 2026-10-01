@@ -70,6 +70,7 @@ type PersistedPlatformLayout = {
   antigravityGroupFirstMigrated?: boolean;
   traeSuiteDefaultGroupRestored?: boolean;
   codexApiServiceSuiteMigrated?: boolean;
+  codebuddyVscodeSuiteMigrated?: boolean;
   apiRelaySidebarVisible?: boolean;
   apiRelayDashboardVisible?: boolean;
   apiRelayEntryOrder?: number;
@@ -89,6 +90,7 @@ interface PlatformLayoutState {
   antigravityGroupFirstMigrated: boolean;
   traeSuiteDefaultGroupRestored: boolean;
   codexApiServiceSuiteMigrated: boolean;
+  codebuddyVscodeSuiteMigrated: boolean;
   apiRelaySidebarVisible: boolean;
   apiRelayDashboardVisible: boolean;
   apiRelayEntryOrder: number;
@@ -133,6 +135,7 @@ interface NormalizedLayoutStateData {
   antigravityGroupFirstMigrated: boolean;
   traeSuiteDefaultGroupRestored: boolean;
   codexApiServiceSuiteMigrated: boolean;
+  codebuddyVscodeSuiteMigrated: boolean;
   apiRelaySidebarVisible: boolean;
   apiRelayDashboardVisible: boolean;
   apiRelayEntryOrder: number;
@@ -316,10 +319,16 @@ function defaultPlatformGroups(): PlatformLayoutGroup[] {
     {
       id: DEFAULT_CODEBUDDY_GROUP_ID,
       name: 'CodeBuddy',
-      platformIds: ['codebuddy', 'codebuddy_cn', 'workbuddy'],
+      platformIds: ['codebuddy', 'codebuddy_cn', 'codebuddy_vscode', 'workbuddy'],
       defaultPlatformId: 'codebuddy',
       iconKind: 'platform',
       iconPlatformId: 'codebuddy',
+      childConfigs: [
+        { platformId: 'codebuddy', name: 'CodeBuddy' },
+        { platformId: 'codebuddy_cn', name: 'CodeBuddy CN' },
+        { platformId: 'codebuddy_vscode', name: 'CodeBuddy VSCode' },
+        { platformId: 'workbuddy', name: 'WorkBuddy' },
+      ],
     },
     createDefaultTraeSuiteGroup(),
   ];
@@ -592,10 +601,13 @@ function normalizePlatformGroups(
   options: {
     restoreDefaultTraeSuiteGroup?: boolean;
     attachCodexApiServiceToCodexGroup?: boolean;
+    attachCodebuddyVscodeToCodebuddyGroup?: boolean;
   } = {},
 ): PlatformLayoutGroup[] {
   const shouldRestoreDefaultTraeSuiteGroup = options.restoreDefaultTraeSuiteGroup === true;
   const shouldAttachCodexApiService = options.attachCodexApiServiceToCodexGroup === true;
+  const shouldAttachCodebuddyVscode =
+    options.attachCodebuddyVscodeToCodebuddyGroup === true;
   const source = Array.isArray(raw) ? raw : (fallbackToDefault ? defaultPlatformGroups() : []);
   const result: PlatformLayoutGroup[] = [];
   const usedPlatformIds = new Set<PlatformId>();
@@ -689,6 +701,24 @@ function normalizePlatformGroups(
         codexGroup.platformIds,
       );
       usedPlatformIds.add('codex_api_service');
+    }
+  }
+
+  // One-time upgrade: attach the CodeBuddy VSCode sub-platform into the existing
+  // CodeBuddy group so it shows up as a sibling of CodeBuddy / CodeBuddy CN / WorkBuddy.
+  // After migration, users can move it out; do not re-attach.
+  if (shouldAttachCodebuddyVscode && !usedPlatformIds.has('codebuddy_vscode')) {
+    const codebuddyGroup = result.find((group) => group.platformIds.includes('codebuddy'));
+    if (codebuddyGroup) {
+      codebuddyGroup.platformIds = [...codebuddyGroup.platformIds, 'codebuddy_vscode'];
+      codebuddyGroup.childConfigs = normalizeGroupChildConfigs(
+        [
+          ...(codebuddyGroup.childConfigs ?? []),
+          { platformId: 'codebuddy_vscode', name: 'CodeBuddy VSCode' },
+        ],
+        codebuddyGroup.platformIds,
+      );
+      usedPlatformIds.add('codebuddy_vscode');
     }
   }
 
@@ -1160,6 +1190,7 @@ function normalizeStateData(
     antigravityGroupFirstMigrated?: boolean;
     traeSuiteDefaultGroupRestored?: boolean;
     codexApiServiceSuiteMigrated?: boolean;
+    codebuddyVscodeSuiteMigrated?: boolean;
     apiRelaySidebarVisible?: boolean;
     apiRelayDashboardVisible?: boolean;
     apiRelayEntryOrder?: number;
@@ -1168,11 +1199,14 @@ function normalizeStateData(
     allowLegacyTrayMigration?: boolean;
     promoteAntigravityGroupEntry?: boolean;
     attachCodexApiServiceToCodexGroup?: boolean;
+    attachCodebuddyVscodeToCodebuddyGroup?: boolean;
   } = {},
 ): NormalizedLayoutStateData {
   const normalizedPlatformOrder = normalizeOrder(raw.orderedPlatformIds);
   const platformGroups = normalizePlatformGroups(raw.platformGroups, false, {
     attachCodexApiServiceToCodexGroup: options.attachCodexApiServiceToCodexGroup === true,
+    attachCodebuddyVscodeToCodebuddyGroup:
+      options.attachCodebuddyVscodeToCodebuddyGroup === true,
   })
     .map((group) => sortGroupPlatformsByOrder(group, normalizedPlatformOrder));
   const normalizedEntryIds = normalizeEntryOrder(raw.orderedEntryIds, platformGroups, normalizedPlatformOrder);
@@ -1219,6 +1253,9 @@ function normalizeStateData(
       raw.antigravityGroupFirstMigrated !== false || options.promoteAntigravityGroupEntry === true,
     traeSuiteDefaultGroupRestored: raw.traeSuiteDefaultGroupRestored !== false,
     codexApiServiceSuiteMigrated: raw.codexApiServiceSuiteMigrated !== false,
+    codebuddyVscodeSuiteMigrated:
+      raw.codebuddyVscodeSuiteMigrated !== false
+      || options.attachCodebuddyVscodeToCodebuddyGroup === true,
     apiRelaySidebarVisible: raw.apiRelaySidebarVisible !== false,
     apiRelayDashboardVisible: raw.apiRelayDashboardVisible !== false,
     apiRelayEntryOrder: normalizeApiRelayEntryOrder(raw.apiRelayEntryOrder, orderedEntryIds.length),
@@ -1244,6 +1281,7 @@ function loadPersistedState(): NormalizedLayoutStateData {
         antigravityGroupFirstMigrated: true,
         traeSuiteDefaultGroupRestored: true,
         codexApiServiceSuiteMigrated: true,
+        codebuddyVscodeSuiteMigrated: true,
         apiRelaySidebarVisible: true,
         apiRelayDashboardVisible: true,
         apiRelayEntryOrder: 0,
@@ -1255,6 +1293,7 @@ function loadPersistedState(): NormalizedLayoutStateData {
     const antigravityGroupFirstMigrated = parsed.antigravityGroupFirstMigrated === true;
     const traeSuiteDefaultGroupRestored = parsed.traeSuiteDefaultGroupRestored === true;
     const codexApiServiceSuiteMigrated = parsed.codexApiServiceSuiteMigrated === true;
+    const codebuddyVscodeSuiteMigrated = parsed.codebuddyVscodeSuiteMigrated === true;
     const orderedPlatformIds = normalizeOrder(parsed.orderedPlatformIds ?? defaultPlatformOrder());
     const hiddenPlatformIds = normalizeHidden(parsed.hiddenPlatformIds ?? []);
     const sidebarPlatformIds = normalizeSidebar(
@@ -1268,6 +1307,7 @@ function loadPersistedState(): NormalizedLayoutStateData {
       {
         restoreDefaultTraeSuiteGroup: !traeSuiteDefaultGroupRestored,
         attachCodexApiServiceToCodexGroup: !codexApiServiceSuiteMigrated,
+        attachCodebuddyVscodeToCodebuddyGroup: !codebuddyVscodeSuiteMigrated,
       },
     ).map((group) => sortGroupPlatformsByOrder(group, orderedPlatformIds));
 
@@ -1303,6 +1343,7 @@ function loadPersistedState(): NormalizedLayoutStateData {
       antigravityGroupFirstMigrated,
       traeSuiteDefaultGroupRestored: true,
       codexApiServiceSuiteMigrated: true,
+      codebuddyVscodeSuiteMigrated: true,
       apiRelaySidebarVisible: parsed.apiRelaySidebarVisible,
       apiRelayDashboardVisible: parsed.apiRelayDashboardVisible,
       apiRelayEntryOrder: parsed.apiRelayEntryOrder,
@@ -1350,6 +1391,7 @@ function persist(
     | 'antigravityGroupFirstMigrated'
     | 'traeSuiteDefaultGroupRestored'
     | 'codexApiServiceSuiteMigrated'
+    | 'codebuddyVscodeSuiteMigrated'
     | 'apiRelaySidebarVisible'
     | 'apiRelayDashboardVisible'
     | 'apiRelayEntryOrder'

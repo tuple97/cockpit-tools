@@ -1,0 +1,136 @@
+name: 🧩 Custom Release (Fork)
+
+# 仅供本 fork 做定制开发使用：
+# - 不签名、不生成 updater 产物（避免依赖上游的签名私钥）；
+# - 只构建 Windows 安装包，并直接发布到本仓库的 Release，便于下载安装；
+# - 使用 custom-v* 标签触发，不会命中上游的 release.yml（其只监听 v*）。
+on:
+  push:
+    tags:
+      - "custom-v*"
+  workflow_dispatch:
+
+concurrency:
+  group: custom-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-windows:
+    name: "🏗️ Custom Build: Windows"
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    env:
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🦀 Rust setup
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: 🦀 Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          key: windows-custom-release
+
+      - name: 🐹 Go setup
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: sidecars/cockpit-cliproxy/go.mod
+          cache-dependency-path: sidecars/cockpit-cliproxy/go.sum
+
+      - name: ⚙️ Node.js setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      - name: 📦 Install frontend dependencies
+        run: npm install
+
+      - name: 🔄 Sync versions
+        run: npm run sync-version
+
+      - name: 💾 Cache Tauri tooling
+        uses: actions/cache@v4
+        with:
+          path: C:\Users\runneradmin\AppData\Local\tauri
+          key: tauri-deps-windows-custom-${{ hashFiles('package-lock.json', '**/Cargo.toml') }}
+          restore-keys: |
+            tauri-deps-windows-custom-
+
+      - name: 🏗️ Build Windows app (unsigned, no updater artifacts)
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          npx tauri build --ci --config src-tauri/tauri.custom.conf.json 2>&1 | tee build-custom.log
+
+      - name: 📜 Print build log on failure
+        if: failure()
+        shell: bash
+        run: |
+          echo "=== BUILD LOG ==="
+          tail -n 300 build-custom.log || true
+
+      - name: 🔍 Resolve release tag
+        id: release_tag
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            VERSION="$(node -e "console.log(require('./package.json').version)")"
+            echo "tag=custom-v${VERSION}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 📤 Upload installer artifacts (workflow artifacts)
+        uses: actions/upload-artifact@v4
+        with:
+          name: custom-windows-installers
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            target/release/bundle/nsis/*.exe
+            target/release/bundle/msi/*.msi
+
+      - name: 🚀 Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          TAG="${{ steps.release_tag.outputs.tag }}"
+          shopt -s nullglob
+          ASSETS=(target/release/bundle/nsis/*.exe target/release/bundle/msi/*.msi)
+          if [ "${#ASSETS[@]}" -eq 0 ]; then
+            echo "No installer assets were produced."
+            exit 1
+          fi
+
+          NOTES_FILE="custom-release-notes.md"
+          {
+            echo "## Cockpit Tools 定制版（${TAG}）"
+            echo
+            echo "基于本 fork（tuple97/cockpit-tools）构建，新增 **CodeBuddy VSCode 插件版** 子平台，用于切换 VS Code 中 CodeBuddy 扩展的登录账号。"
+            echo
+            echo "### 安装说明"
+            echo "- Windows：下载并运行 \`.exe\`（NSIS 安装包，按当前用户安装）或 \`.msi\`。"
+            echo "- 该构建未签名，Windows SmartScreen 可能提示，请选择「仍要运行」。"
+            echo "- 该构建不含自动更新产物，应用内自动更新不可用，后续版本请在本 Release 页面手动下载。"
+          } > "${NOTES_FILE}"
+
+          if gh release view "${TAG}" > /dev/null 2>&1; then
+            gh release edit "${TAG}" --notes-file "${NOTES_FILE}"
+            gh release upload "${TAG}" "${ASSETS[@]}" --clobber
+          else
+            gh release create "${TAG}" \
+              --title "Cockpit Tools 定制版 ${TAG}" \
+              --notes-file "${NOTES_FILE}" \
+              "${ASSETS[@]}"
+          fi
+
+          echo "Published ${#ASSETS[@]} asset(s) to ${TAG}"

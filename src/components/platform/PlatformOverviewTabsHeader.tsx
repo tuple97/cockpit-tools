@@ -43,6 +43,7 @@ export type PlatformOverviewHeaderId =
   | 'grok'
   | 'codebuddy'
   | 'codebuddy_cn'
+  | 'codebuddy_vscode'
   | 'qoder'
   | 'zcode'
   | 'trae'
@@ -109,6 +110,10 @@ const CONFIGS: Record<PlatformOverviewHeaderId, PlatformOverviewConfig> = {
   },
   codebuddy_cn: {
     platformLabel: 'CodeBuddy CN',
+    overviewIcon: <CodebuddyIcon className="tab-icon" />,
+  },
+  codebuddy_vscode: {
+    platformLabel: 'CodeBuddy VSCode',
     overviewIcon: <CodebuddyIcon className="tab-icon" />,
   },
   qoder: {
