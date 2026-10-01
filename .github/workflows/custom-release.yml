@@ -128,13 +128,19 @@ jobs:
           } > "${NOTES_FILE}"
 
           if gh release view "${TAG}" > /dev/null 2>&1; then
+            echo "Release ${TAG} 已存在，更新说明并覆盖安装包"
             gh release edit "${TAG}" --notes-file "${NOTES_FILE}"
             gh release upload "${TAG}" "${ASSETS[@]}" --clobber
           else
-            gh release create "${TAG}" \
+            echo "创建 Release ${TAG}"
+            if ! gh release create "${TAG}" \
               --title "Cockpit Tools 定制版 ${TAG}" \
               --notes-file "${NOTES_FILE}" \
-              "${ASSETS[@]}"
+              "${ASSETS[@]}"; then
+              echo "创建失败，回退为更新同名 Release"
+              gh release edit "${TAG}" --notes-file "${NOTES_FILE}"
+              gh release upload "${TAG}" "${ASSETS[@]}" --clobber
+            fi
           fi
 
           echo "Published ${#ASSETS[@]} asset(s) to ${TAG}"
