@@ -485,6 +485,7 @@
     "traeSoloCn": "TRAE SOLO CN",
     "codebuddyCn": "CodeBuddy CN",
     "codebuddyVscode": "CodeBuddy VSCode",
+    "codebuddyIdea": "CodeBuddy IDEA",
     "switchClassicLayoutEntry": "Switch to classic layout",
     "switchClassicLayoutTitle": "Switch to the classic sidebar layout",
     "switchClassicLayoutDesc": "The classic layout shows the full platform navigation and supports sidebar collapsing. You can switch back anytime in Settings > General > Sidebar Layout.",
@@ -6739,6 +6740,29 @@
       "noStateDb": "VS Code sign-in database not found: ",
       "noSecret": "CodeBuddy extension sign-in state not found in VS Code: ",
       "hint": "Install and sign in to the CodeBuddy extension in VS Code once, then use the switch feature."
+    }
+  },
+  "codebuddyIdea": {
+    "title": "CodeBuddy IDEA Account",
+    "noAccounts": "No CodeBuddy accounts",
+    "addAccount": "Add CodeBuddy Account",
+    "search": "Search CodeBuddy accounts...",
+    "oauthDesc": "Click the button below to open the CodeBuddy authorization page in your browser.",
+    "tokenDesc": "Paste your CodeBuddy access token:",
+    "flowNotice": {
+      "title": "CodeBuddy IDEA Info (click to expand/collapse)",
+      "desc": "This platform switches the account used by the CodeBuddy plugin inside IntelliJ IDEA and other JetBrains IDEs: it reads and writes the sign-in state in options/secret-storage.xml under the IDE config directory, processed locally only. It uses the China site and shares the account pool with CodeBuddy CN.",
+      "permission": "Permission scope: read and write options/secret-storage.xml (plain XML, unencrypted) under the IntelliJ-based IDE config directory.",
+      "network": "Network scope: OAuth login and token refresh require network requests to codebuddy.cn and billing APIs. No local keys or credentials are uploaded."
+    },
+    "import": {
+      "localDesc": "Import account data from the CodeBuddy plugin in local IntelliJ-based IDEs or a JSON file. Reload the IDE after switching accounts.",
+      "localClient": "Import from local IDEA"
+    },
+    "env": {
+      "noSecretStorage": "IDEA sign-in file not found: ",
+      "noSecret": "CodeBuddy plugin sign-in state not found in IDEA: ",
+      "hint": "Install and sign in to the CodeBuddy plugin in IntelliJ IDEA once, then use the switch feature."
     }
   },
   "workbuddy": {

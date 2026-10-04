@@ -821,6 +821,7 @@ pub fn normalize_startup_page(value: &str) -> String {
         "codebuddy",
         "codebuddy-cn",
         "codebuddy-vscode",
+        "codebuddy-idea",
         "qoder",
         "zcode",
         "trae",

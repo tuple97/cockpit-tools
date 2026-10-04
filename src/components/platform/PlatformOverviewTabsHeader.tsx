@@ -44,6 +44,7 @@ export type PlatformOverviewHeaderId =
   | 'codebuddy'
   | 'codebuddy_cn'
   | 'codebuddy_vscode'
+  | 'codebuddy_idea'
   | 'qoder'
   | 'zcode'
   | 'trae'
@@ -114,6 +115,10 @@ const CONFIGS: Record<PlatformOverviewHeaderId, PlatformOverviewConfig> = {
   },
   codebuddy_vscode: {
     platformLabel: 'CodeBuddy VSCode',
+    overviewIcon: <CodebuddyIcon className="tab-icon" />,
+  },
+  codebuddy_idea: {
+    platformLabel: 'CodeBuddy IDEA',
     overviewIcon: <CodebuddyIcon className="tab-icon" />,
   },
   qoder: {

@@ -15,6 +15,7 @@ export type PlatformId =
   | 'codebuddy'
   | 'codebuddy_cn'
   | 'codebuddy_vscode'
+  | 'codebuddy_idea'
   | 'qoder'
   | 'zcode'
   | 'trae'
@@ -38,6 +39,7 @@ export const ALL_PLATFORM_IDS: PlatformId[] = [
   'codebuddy',
   'codebuddy_cn',
   'codebuddy_vscode',
+  'codebuddy_idea',
   'qoder',
   'zcode',
   'trae',
@@ -79,6 +81,7 @@ export const PLATFORM_PAGE_MAP: Record<PlatformId, Page> = {
   codebuddy: 'codebuddy',
   codebuddy_cn: 'codebuddy-cn',
   codebuddy_vscode: 'codebuddy-vscode',
+  codebuddy_idea: 'codebuddy-idea',
   qoder: 'qoder',
   zcode: 'zcode',
   trae: 'trae',

@@ -7,6 +7,12 @@ All notable changes to Cockpit Tools will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
+## [1.3.62] - 2026-10-04
+
+### Added
+
+- Added a CodeBuddy IDEA sub-platform to manage and switch the CodeBuddy plugin account used by IntelliJ IDEA and other JetBrains IDEs. It shares the account pool with CodeBuddy CN and reads or writes the sign-in state in `options/secret-storage.xml` under the IDE config directory (plain XML, no system credential required), supports importing the current local sign-in state, and ships with an account page, dashboard card and tray entry consistent with the CodeBuddy VSCode sub-platform.
+
 ## [1.3.61] - 2026-09-27
 
 ### Added

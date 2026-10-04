@@ -11,6 +11,7 @@ import { useClaudeAccountStore } from '../stores/useClaudeAccountStore';
 import { useCodebuddyAccountStore } from '../stores/useCodebuddyAccountStore';
 import { useCodebuddyCnAccountStore } from '../stores/useCodebuddyCnAccountStore';
 import { useCodebuddyVscodeAccountStore } from '../stores/useCodebuddyVscodeAccountStore';
+import { useCodebuddyIdeaAccountStore } from '../stores/useCodebuddyIdeaAccountStore';
 import { useQoderAccountStore } from '../stores/useQoderAccountStore';
 import { useZcodeAccountStore } from '../stores/useZcodeAccountStore';
 import { useTraeAccountStore } from '../stores/useTraeAccountStore';
@@ -335,6 +336,9 @@ export function DashboardPage({
         case 'codebuddy_vscode':
           await useCodebuddyVscodeAccountStore.getState().updateAccountTags(accountId, newTags);
           break;
+        case 'codebuddy_idea':
+          await useCodebuddyIdeaAccountStore.getState().updateAccountTags(accountId, newTags);
+          break;
         case 'qoder':
           await useQoderAccountStore.getState().updateAccountTags(accountId, newTags);
           break;
@@ -518,6 +522,13 @@ export function DashboardPage({
   } = useCodebuddyVscodeAccountStore();
 
   const {
+    accounts: codebuddyIdeaAccounts,
+    currentAccountId: codebuddyIdeaCurrentId,
+    fetchAccounts: fetchCodebuddyIdeaAccounts,
+    switchAccount: switchCodebuddyIdeaAccount,
+  } = useCodebuddyIdeaAccountStore();
+
+  const {
     accounts: qoderAccounts,
     currentAccountId: qoderCurrentId,
     fetchAccounts: fetchQoderAccounts,
@@ -632,6 +643,7 @@ export function DashboardPage({
       fetchCodebuddyAccounts,
       fetchCodebuddyCnAccounts,
       fetchCodebuddyVscodeAccounts,
+      fetchCodebuddyIdeaAccounts,
       fetchQoderAccounts,
       fetchZcodeAccounts,
       fetchTraeAccounts,
@@ -727,6 +739,7 @@ export function DashboardPage({
       codebuddy: codebuddyAccounts.length,
       codebuddy_cn: codebuddyCnAccounts.length,
       codebuddy_vscode: codebuddyVscodeAccounts.length,
+      codebuddy_idea: codebuddyIdeaAccounts.length,
       qoder: qoderAccounts.length,
       zcode: zcodeAccounts.length,
       trae: traeAccountsByPlatform.trae.length,
@@ -735,7 +748,7 @@ export function DashboardPage({
       trae_solo_cn: traeAccountsByPlatform.trae_solo_cn.length,
       workbuddy: workbuddyAccounts.length,
     };
-  }, [agAccounts, codexAccounts, claudeAccounts, zedAccounts, githubCopilotAccounts, windsurfAccounts, kiroAccounts, cursorAccounts, grokAccounts, codebuddyAccounts, codebuddyCnAccounts, codebuddyVscodeAccounts, qoderAccounts, zcodeAccounts, traeAccounts, traeAccountsByPlatform, workbuddyAccounts]);
+  }, [agAccounts, codexAccounts, claudeAccounts, zedAccounts, githubCopilotAccounts, windsurfAccounts, kiroAccounts, cursorAccounts, grokAccounts, codebuddyAccounts, codebuddyCnAccounts, codebuddyVscodeAccounts, codebuddyIdeaAccounts, qoderAccounts, zcodeAccounts, traeAccounts, traeAccountsByPlatform, workbuddyAccounts]);
 
   const dashboardAvailableTags = useMemo(() => {
     const tagSet = new Set<string>();
@@ -792,6 +805,7 @@ export function DashboardPage({
     codebuddy: boolean;
     codebuddyCn: boolean;
     codebuddyVscode: boolean;
+    codebuddyIdea: boolean;
     qoder: boolean;
     zcode: boolean;
     trae: boolean;
@@ -808,6 +822,7 @@ export function DashboardPage({
     codebuddy: false,
     codebuddyCn: false,
     codebuddyVscode: false,
+    codebuddyIdea: false,
     qoder: false,
     zcode: false,
     trae: false,
@@ -1429,6 +1444,23 @@ export function DashboardPage({
     }
   };
 
+  const handleRefreshCodebuddyIdeaCard = async () => {
+    if (cardRefreshing.codebuddyIdea) return;
+    setCardRefreshing((prev) => ({ ...prev, codebuddyIdea: true }));
+    const idsToRefresh = Array.from(
+      new Set([codebuddyIdeaCurrent?.id, codebuddyIdeaRecommended?.id].filter(Boolean)),
+    ) as string[];
+    try {
+      for (const id of idsToRefresh) {
+        await useCodebuddyIdeaAccountStore.getState().refreshToken(id);
+      }
+    } catch (error) {
+      console.error('Card refresh failed:', error);
+    } finally {
+      setCardRefreshing((prev) => ({ ...prev, codebuddyIdea: false }));
+    }
+  };
+
   const handleRefreshQoderCard = async () => {
     if (cardRefreshing.qoder) return;
     setCardRefreshing((prev) => ({ ...prev, qoder: true }));
@@ -1541,11 +1573,43 @@ export function DashboardPage({
     }
   };
 
+  const handleSwitchCodebuddyIdea = async (accountId: string) => {
+    if (switching.has(accountId)) return;
+    setSwitching((prev) => new Set(prev).add(accountId));
+    try {
+      await switchCodebuddyIdeaAccount(accountId);
+    } catch (error) {
+      console.error('Switch failed:', error);
+    } finally {
+      setSwitching((prev) => {
+        const next = new Set(prev);
+        next.delete(accountId);
+        return next;
+      });
+    }
+  };
+
   const handleRefreshCodebuddyVscode = async (accountId: string) => {
     if (refreshing.has(accountId)) return;
     setRefreshing((prev) => new Set(prev).add(accountId));
     try {
       await useCodebuddyVscodeAccountStore.getState().refreshToken(accountId);
+    } catch (error) {
+      console.error('Refresh failed:', error);
+    } finally {
+      setRefreshing((prev) => {
+        const next = new Set(prev);
+        next.delete(accountId);
+        return next;
+      });
+    }
+  };
+
+  const handleRefreshCodebuddyIdea = async (accountId: string) => {
+    if (refreshing.has(accountId)) return;
+    setRefreshing((prev) => new Set(prev).add(accountId));
+    try {
+      await useCodebuddyIdeaAccountStore.getState().refreshToken(accountId);
     } catch (error) {
       console.error('Refresh failed:', error);
     } finally {
@@ -1776,6 +1840,11 @@ export function DashboardPage({
   const codebuddyVscodeCurrent = useMemo(
     () => resolveDashboardCurrentAccount(codebuddyVscodeAccounts, codebuddyVscodeCurrentId),
     [codebuddyVscodeAccounts, codebuddyVscodeCurrentId],
+  );
+
+  const codebuddyIdeaCurrent = useMemo(
+    () => resolveDashboardCurrentAccount(codebuddyIdeaAccounts, codebuddyIdeaCurrentId),
+    [codebuddyIdeaAccounts, codebuddyIdeaCurrentId],
   );
 
   const qoderCurrent = useMemo(
@@ -2059,6 +2128,32 @@ export function DashboardPage({
       return candidateScore.freshness > bestScore.freshness ? candidate : best;
     });
   }, [codebuddyVscodeAccounts, codebuddyVscodeCurrent?.id]);
+
+  const codebuddyIdeaRecommended = useMemo(() => {
+    if (codebuddyIdeaAccounts.length <= 1) return null;
+    const currentId = codebuddyIdeaCurrent?.id;
+    const others = codebuddyIdeaAccounts.filter((a) => a.id !== currentId);
+    if (others.length === 0) return null;
+
+    const getScore = (account: CodebuddyAccount) => {
+      const resource = getCodebuddyResourceSummary(account);
+      const extra = getCodebuddyExtraCreditSummary(account);
+      const remain = resource?.remainPercent ?? (extra.remainPercent ?? -1);
+      return {
+        remainPercent: remain,
+        freshness: account.last_used || account.created_at || 0,
+      };
+    };
+
+    return others.reduce((best, candidate) => {
+      const bestScore = getScore(best);
+      const candidateScore = getScore(candidate);
+      if (candidateScore.remainPercent !== bestScore.remainPercent) {
+        return candidateScore.remainPercent > bestScore.remainPercent ? candidate : best;
+      }
+      return candidateScore.freshness > bestScore.freshness ? candidate : best;
+    });
+  }, [codebuddyIdeaAccounts, codebuddyIdeaCurrent?.id]);
 
   const qoderRecommended = useMemo(() => {
     if (qoderAccounts.length <= 1) return null;
@@ -2715,6 +2810,24 @@ export function DashboardPage({
     });
   };
 
+  const renderCodebuddyIdeaAccountContent = (account: CodebuddyAccount | null) => {
+    if (!account) return <div className="empty-slot">{t('dashboard.noAccount', '无账号')}</div>;
+
+    const presentation = buildCodebuddyAccountPresentation(account, t);
+    const mergedQuotaItems = buildCodebuddyCategoryQuotaItems(account);
+    return renderUnifiedAccountCard({
+      presentation: {
+        ...presentation,
+        quotaItems: mergedQuotaItems,
+      },
+      onRefresh: () => handleRefreshCodebuddyIdea(account.id),
+      onSwitch: () => handleSwitchCodebuddyIdea(account.id),
+      isRefreshing: refreshing.has(account.id),
+      isSwitching: switching.has(account.id),
+      onEditTags: () => setTagModalState({ accountId: account.id, platform: 'codebuddy_idea', tags: account.tags || [] }),
+    });
+  };
+
   const renderQoderAccountContent = (account: QoderAccount | null) => {
     if (!account) return <div className="empty-slot">{t('dashboard.noAccount', '无账号')}</div>;
 
@@ -2786,6 +2899,7 @@ export function DashboardPage({
     codebuddy: stats.codebuddy,
     codebuddy_cn: stats.codebuddy_cn,
     codebuddy_vscode: stats.codebuddy_vscode,
+    codebuddy_idea: stats.codebuddy_idea,
     qoder: stats.qoder,
     zcode: stats.zcode,
     trae: stats.trae,
@@ -3396,6 +3510,53 @@ export function DashboardPage({
           </div>
 
           <button className="card-footer-action" onClick={() => onNavigate('codebuddy-vscode')}>
+            {t('dashboard.viewAllAccounts', '查看所有账号')}
+          </button>
+        </div>
+      );
+    }
+
+    if (platformId === 'codebuddy_idea') {
+      return (
+        <div className="main-card windsurf-card" key={platformId}>
+          <div className="main-card-header">
+            <div className="header-title">
+              <CodebuddyIcon style={{ width: 18, height: 18 }} />
+              <h3>{getPlatformLabel(platformId, t)}</h3>
+            </div>
+            <div className="header-action-group">
+              <button
+                className="header-action-btn"
+                onClick={handleRefreshCodebuddyIdeaCard}
+                disabled={cardRefreshing.codebuddyIdea}
+                title={t('common.refresh', '刷新')}
+              >
+                <RotateCw size={14} className={cardRefreshing.codebuddyIdea ? 'loading-spinner' : ''} />
+                <span>{t('common.refresh', '刷新')}</span>
+              </button>
+              {renderHideCardButton(platformId)}
+            </div>
+          </div>
+
+          <div className="split-content">
+            <div className="split-half current-half">
+              <span className="half-label"><CheckCircle2 size={12} /> {t('dashboard.current', '当前账户')}</span>
+              {renderCodebuddyIdeaAccountContent(codebuddyIdeaCurrent)}
+            </div>
+
+            <div className="split-divider"></div>
+
+            <div className="split-half recommend-half">
+              <span className="half-label"><Sparkles size={12} /> {t('dashboard.recommended', '推荐账号')}</span>
+              {codebuddyIdeaRecommended ? (
+                renderCodebuddyIdeaAccountContent(codebuddyIdeaRecommended)
+              ) : (
+                <div className="empty-slot-text">{t('dashboard.noRecommendation', '暂无更好推荐')}</div>
+              )}
+            </div>
+          </div>
+
+          <button className="card-footer-action" onClick={() => onNavigate('codebuddy-idea')}>
             {t('dashboard.viewAllAccounts', '查看所有账号')}
           </button>
         </div>

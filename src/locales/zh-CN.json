@@ -485,6 +485,7 @@
     "traeSoloCn": "TRAE SOLO CN",
     "codebuddyCn": "CodeBuddy CN",
     "codebuddyVscode": "CodeBuddy VSCode",
+    "codebuddyIdea": "CodeBuddy IDEA",
     "switchClassicLayoutEntry": "切换到经典布局",
     "switchClassicLayoutTitle": "切换至经典侧边栏布局",
     "switchClassicLayoutDesc": "经典布局将展示完整平台导航，并支持可折叠侧边栏。你可在“设置 > 通用 > 侧边栏布局”中随时切换回原始布局。",
@@ -6739,6 +6740,29 @@
       "noStateDb": "未检测到 VS Code 登录数据库：",
       "noSecret": "未检测到 VS Code 中 CodeBuddy 扩展的登录态：",
       "hint": "请先在 VS Code 中安装并登录一次 CodeBuddy 扩展，再使用切换功能。"
+    }
+  },
+  "codebuddyIdea": {
+    "title": "CodeBuddy IDEA 插件版账号管理",
+    "noAccounts": "暂无 CodeBuddy 账号",
+    "addAccount": "添加 CodeBuddy 账号",
+    "search": "搜索 CodeBuddy 账号...",
+    "oauthDesc": "点击下方按钮将在浏览器中打开 CodeBuddy 授权页面。",
+    "tokenDesc": "粘贴 CodeBuddy 的 access token：",
+    "flowNotice": {
+      "title": "CodeBuddy IDEA 插件版说明（点击展开/收起）",
+      "desc": "此平台用于切换 IntelliJ IDEA 等 JetBrains IDE 里 CodeBuddy 插件的登录账号：读取/回写 IDE 配置目录下的 options/secret-storage.xml 登录态，数据仅在本地处理。走国内版站点，账号与 CodeBuddy CN（国内版）共用同一份账号池。",
+      "permission": "权限范围：读取并回写 IntelliJ 系 IDE 配置目录下的 options/secret-storage.xml（纯 XML，未加密）。",
+      "network": "网络范围：OAuth 授权登录与 Token 刷新需联网请求 codebuddy.cn 与计费接口。不上传本地密钥或凭证。"
+    },
+    "import": {
+      "localDesc": "支持从本机 IntelliJ 系 IDE 的 CodeBuddy 插件或 JSON 文件导入账号数据。切换账号后需要重新加载 IDE 生效。",
+      "localClient": "从本机 IDEA 导入"
+    },
+    "env": {
+      "noSecretStorage": "未检测到 IDEA 登录态文件：",
+      "noSecret": "未检测到 IDEA 中 CodeBuddy 插件的登录态：",
+      "hint": "请先在 IntelliJ IDEA 中安装并登录一次 CodeBuddy 插件，再使用切换功能。"
     }
   },
   "workbuddy": {

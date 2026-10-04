@@ -115,11 +115,12 @@ jobs:
           {
             echo "## Cockpit Tools 定制版（${TAG}）"
             echo
-            echo "基于本 fork（tuple97/cockpit-tools）构建，新增 **CodeBuddy VSCode 插件版** 子平台，用于切换 VS Code 中 CodeBuddy 扩展的登录账号。"
+            echo "基于本 fork（tuple97/cockpit-tools）构建，在原有 CodeBuddy VSCode 子平台基础上，新增 **CodeBuddy IDEA（IntelliJ 插件版）** 子平台，用于切换 IntelliJ IDEA 等 JetBrains IDE 中 CodeBuddy 插件的登录账号。"
             echo
             echo "### 本次更新"
-            echo "- CodeBuddy VSCode 平台改为走**国内版（codebuddy.cn）**站点：登录授权、Token 刷新与配额查询均使用国内版接口，账号池与 CodeBuddy CN 共用。"
-            echo "- 托盘菜单新增 **CodeBuddy VSCode** 平台入口，可直接查看当前登录账号与配额。"
+            echo "- 新增 **CodeBuddy IDEA 子平台**：账号池与 CodeBuddy CN（国内版）共用，读写 IDE 配置目录下的 \`options/secret-storage.xml\` 登录态（纯 XML，无需系统凭据）。"
+            echo "- 支持从本机 IntelliJ 系 IDE 导入当前登录态、刷新与切换账号，并提供账号页、首页（Dashboard）卡片与托盘入口。"
+            echo "- 包含 CodeBuddy 分组下的子级平台切换、启动页设置、数据导入导出与中英双语文案。"
             echo
             echo "### 安装说明"
             echo "- Windows：下载并运行 \`.exe\`（NSIS 安装包，按当前用户安装）或 \`.msi\`。"

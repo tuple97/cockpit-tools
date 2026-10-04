@@ -145,6 +145,9 @@ const CodebuddyCnAccountsPage = lazy(() =>
 const CodebuddyVscodeAccountsPage = lazy(() =>
   import('./pages/CodebuddyVscodeAccountsPage').then((module) => ({ default: module.CodebuddyVscodeAccountsPage })),
 );
+const CodebuddyIdeaAccountsPage = lazy(() =>
+  import('./pages/CodebuddyIdeaAccountsPage').then((module) => ({ default: module.CodebuddyIdeaAccountsPage })),
+);
 const QoderAccountsPage = lazy(() =>
   import('./pages/QoderAccountsPage').then((module) => ({ default: module.QoderAccountsPage })),
 );
@@ -221,6 +224,7 @@ const RENDERABLE_PAGE_VALUES: readonly Page[] = [
   'codebuddy',
   'codebuddy-cn',
   'codebuddy-vscode',
+  'codebuddy-idea',
   'qoder',
   'zcode',
   'trae',
@@ -4086,6 +4090,9 @@ function MainApp() {
           </VisibleBootPage>
           <VisibleBootPage when={page === 'codebuddy-vscode'}>
             <CodebuddyVscodeAccountsPage />
+          </VisibleBootPage>
+          <VisibleBootPage when={page === 'codebuddy-idea'}>
+            <CodebuddyIdeaAccountsPage />
           </VisibleBootPage>
           <VisibleBootPage when={page === 'qoder'}>
             <QoderAccountsPage />

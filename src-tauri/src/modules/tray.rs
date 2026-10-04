@@ -207,6 +207,7 @@ pub(crate) enum PlatformId {
     Codebuddy,
     CodebuddyCn,
     CodebuddyVscode,
+    CodebuddyIdea,
     Qoder,
     Zcode,
     Trae,
@@ -217,7 +218,7 @@ pub(crate) enum PlatformId {
 }
 
 impl PlatformId {
-    pub(crate) fn default_order() -> [Self; 19] {
+    pub(crate) fn default_order() -> [Self; 20] {
         [
             Self::Claude,
             Self::Codex,
@@ -231,6 +232,7 @@ impl PlatformId {
             Self::Codebuddy,
             Self::CodebuddyCn,
             Self::CodebuddyVscode,
+            Self::CodebuddyIdea,
             Self::Qoder,
             Self::Zcode,
             Self::Trae,
@@ -255,6 +257,7 @@ impl PlatformId {
             crate::modules::tray_layout::PLATFORM_CODEBUDDY => Some(Self::Codebuddy),
             crate::modules::tray_layout::PLATFORM_CODEBUDDY_CN => Some(Self::CodebuddyCn),
             crate::modules::tray_layout::PLATFORM_CODEBUDDY_VSCODE => Some(Self::CodebuddyVscode),
+            crate::modules::tray_layout::PLATFORM_CODEBUDDY_IDEA => Some(Self::CodebuddyIdea),
             crate::modules::tray_layout::PLATFORM_QODER => Some(Self::Qoder),
             crate::modules::tray_layout::PLATFORM_ZCODE => Some(Self::Zcode),
             crate::modules::tray_layout::PLATFORM_TRAE => Some(Self::Trae),
@@ -280,6 +283,7 @@ impl PlatformId {
             Self::Codebuddy => crate::modules::tray_layout::PLATFORM_CODEBUDDY,
             Self::CodebuddyCn => crate::modules::tray_layout::PLATFORM_CODEBUDDY_CN,
             Self::CodebuddyVscode => crate::modules::tray_layout::PLATFORM_CODEBUDDY_VSCODE,
+            Self::CodebuddyIdea => crate::modules::tray_layout::PLATFORM_CODEBUDDY_IDEA,
             Self::Qoder => crate::modules::tray_layout::PLATFORM_QODER,
             Self::Zcode => crate::modules::tray_layout::PLATFORM_ZCODE,
             Self::Trae => crate::modules::tray_layout::PLATFORM_TRAE,
@@ -304,6 +308,7 @@ impl PlatformId {
             Self::Codebuddy => "CodeBuddy",
             Self::CodebuddyCn => "CodeBuddy CN",
             Self::CodebuddyVscode => "CodeBuddy VSCode",
+            Self::CodebuddyIdea => "CodeBuddy IDEA",
             Self::Qoder => "Qoder",
             Self::Zcode => "ZCode",
             Self::Trae => "Trae",
@@ -328,6 +333,7 @@ impl PlatformId {
             Self::Codebuddy => "codebuddy",
             Self::CodebuddyCn => "codebuddy-cn",
             Self::CodebuddyVscode => "codebuddy-vscode",
+            Self::CodebuddyIdea => "codebuddy-idea",
             Self::Qoder => "qoder",
             Self::Zcode => "zcode",
             Self::Trae => "trae",
@@ -935,6 +941,7 @@ fn get_account_display_info(platform: PlatformId, lang: &str) -> AccountDisplayI
         PlatformId::Codebuddy => build_codebuddy_display_info(lang),
         PlatformId::CodebuddyCn => build_codebuddy_cn_display_info(lang),
         PlatformId::CodebuddyVscode => build_codebuddy_vscode_display_info(lang),
+        PlatformId::CodebuddyIdea => build_codebuddy_idea_display_info(lang),
         PlatformId::Qoder => build_qoder_display_info(lang),
         PlatformId::Zcode => build_zcode_display_info(lang),
         PlatformId::Trae | PlatformId::TraeSolo | PlatformId::TraeCn | PlatformId::TraeSoloCn => {
@@ -1514,6 +1521,12 @@ fn build_codebuddy_vscode_display_info(lang: &str) -> AccountDisplayInfo {
 }
 
 #[cfg(not(target_os = "macos"))]
+fn build_codebuddy_idea_display_info(lang: &str) -> AccountDisplayInfo {
+    let accounts = crate::modules::codebuddy_cn_account::list_accounts();
+    build_codebuddy_family_display_info(lang, resolve_codebuddy_idea_current_account(&accounts))
+}
+
+#[cfg(not(target_os = "macos"))]
 fn build_workbuddy_display_info(lang: &str) -> AccountDisplayInfo {
     let accounts = crate::modules::workbuddy_account::list_accounts();
     build_workbuddy_family_display_info(lang, resolve_workbuddy_current_account(&accounts))
@@ -1787,6 +1800,23 @@ fn resolve_codebuddy_vscode_current_account(
     accounts: &[crate::models::codebuddy::CodebuddyAccount],
 ) -> Option<crate::models::codebuddy::CodebuddyAccount> {
     let account_id = crate::modules::codebuddy_vscode::resolve_current_account_id(accounts)
+        .ok()
+        .flatten()?;
+    accounts
+        .iter()
+        .find(|account| account.id == account_id)
+        .cloned()
+}
+
+/// IntelliJ 系 IDE 里当前登录的 CodeBuddy 账号。
+///
+/// 读取 IDEA 配置目录下的 options/secret-storage.xml，失败时（未安装 / 未登录）
+/// 按「未登录」处理，不影响托盘其它平台。
+#[cfg(not(target_os = "macos"))]
+fn resolve_codebuddy_idea_current_account(
+    accounts: &[crate::models::codebuddy::CodebuddyAccount],
+) -> Option<crate::models::codebuddy::CodebuddyAccount> {
+    let account_id = crate::modules::codebuddy_idea::resolve_current_account_id(accounts)
         .ok()
         .flatten()?;
     accounts

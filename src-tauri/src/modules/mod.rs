@@ -18,6 +18,7 @@ pub mod codebuddy_account;
 pub mod codebuddy_cn_account;
 pub mod codebuddy_cn_instance;
 pub mod codebuddy_cn_oauth;
+pub mod codebuddy_idea;
 pub mod codebuddy_instance;
 pub mod codebuddy_oauth;
 pub mod codebuddy_session;

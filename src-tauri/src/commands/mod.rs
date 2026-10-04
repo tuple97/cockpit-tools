@@ -6,6 +6,7 @@ pub mod claude_instance;
 pub mod codebuddy;
 pub mod codebuddy_cn;
 pub mod codebuddy_cn_instance;
+pub mod codebuddy_idea;
 pub mod codebuddy_instance;
 pub mod codebuddy_session;
 pub mod codebuddy_vscode;

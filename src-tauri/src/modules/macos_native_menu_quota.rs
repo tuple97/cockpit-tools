@@ -480,6 +480,7 @@
             PlatformId::Codebuddy => "#4b74ff",
             PlatformId::CodebuddyCn => "#4b74ff",
             PlatformId::CodebuddyVscode => "#4b74ff",
+            PlatformId::CodebuddyIdea => "#4b74ff",
             PlatformId::Qoder => "#5664ff",
             PlatformId::Zcode => "#2f9f7f",
             PlatformId::Trae

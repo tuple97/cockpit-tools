@@ -316,14 +316,15 @@ const FALLBACK_PLATFORM_SETTINGS_ORDER: Record<PlatformId, number> = {
   codebuddy: 10,
   codebuddy_cn: 11,
   codebuddy_vscode: 12,
-  qoder: 13,
-  zcode: 14,
-  trae: 15,
-  trae_solo: 16,
-  trae_cn: 17,
-  trae_solo_cn: 18,
-  workbuddy: 19,
-  zed: 20,
+  codebuddy_idea: 13,
+  qoder: 14,
+  zcode: 15,
+  trae: 16,
+  trae_solo: 17,
+  trae_cn: 18,
+  trae_solo_cn: 19,
+  workbuddy: 20,
+  zed: 21,
 };
 type ConfigUpdatedEventDetail = {
   source?: string;

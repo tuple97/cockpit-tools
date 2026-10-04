@@ -297,6 +297,8 @@ const ACCOUNT_LOADERS: Record<PlatformId, AccountLoader> = {
     (await codebuddyCnService.listCodebuddyCnAccounts()) as unknown as TransferAccountRecord[],
   codebuddy_vscode: async () =>
     (await codebuddyService.listCodebuddyAccounts()) as unknown as TransferAccountRecord[],
+  codebuddy_idea: async () =>
+    (await codebuddyService.listCodebuddyAccounts()) as unknown as TransferAccountRecord[],
   qoder: async () => (await qoderService.listQoderAccounts()) as unknown as TransferAccountRecord[],
   zcode: async () => (await zcodeService.listZcodeAccounts()) as unknown as TransferAccountRecord[],
   trae: async () => (await traeService.listTraeAccounts()) as unknown as TransferAccountRecord[],
@@ -321,6 +323,7 @@ const LEGACY_IMPORTERS: Record<PlatformId, ((jsonContent: string) => Promise<unk
   codebuddy: codebuddyService.importCodebuddyFromJson,
   codebuddy_cn: codebuddyCnService.importCodebuddyCnFromJson,
   codebuddy_vscode: codebuddyService.importCodebuddyFromJson,
+  codebuddy_idea: codebuddyService.importCodebuddyFromJson,
   qoder: qoderService.importQoderFromJson,
   zcode: zcodeService.importZcodeFromJson,
   trae: traeService.importTraeFromJson,
@@ -504,6 +507,7 @@ function buildAccountRef(platform: PlatformId, account: TransferAccountRecord): 
       break;
     case 'codebuddy':
     case 'codebuddy_cn':
+    case 'codebuddy_idea':
     case 'workbuddy':
       ref.email = normalizeString(account.email) ?? undefined;
       ref.uid = normalizeString(account.uid) ?? undefined;
@@ -588,6 +592,7 @@ function scoreAccountRef(ref: DataTransferAccountRef, account: TransferAccountRe
       break;
     case 'codebuddy':
     case 'codebuddy_cn':
+    case 'codebuddy_idea':
     case 'workbuddy':
       addStringScore(ref.uid, account.uid, 24);
       addStringScore(ref.email, account.email, 10);

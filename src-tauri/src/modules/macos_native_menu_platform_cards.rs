@@ -688,6 +688,7 @@
             PlatformId::Codebuddy => build_codebuddy_cards(lang),
             PlatformId::CodebuddyCn => build_codebuddy_cn_cards(lang),
             PlatformId::CodebuddyVscode => build_codebuddy_vscode_cards(lang),
+            PlatformId::CodebuddyIdea => build_codebuddy_idea_cards(lang),
             PlatformId::Workbuddy => build_workbuddy_cards(lang),
             PlatformId::Zed => build_zed_cards(lang),
         }
@@ -2123,6 +2124,18 @@
         let (cards, _, _) = build_codebuddy_cn_cards(lang);
         let accounts = modules::codebuddy_cn_account::list_accounts();
         let current_id = modules::codebuddy_vscode::resolve_current_account_id(&accounts)
+            .ok()
+            .flatten();
+        (cards, current_id, None)
+    }
+
+    /// IDEA 插件版：账号池与国内版共用，当前账号以 IntelliJ 系 IDE 中的登录态为准。
+    fn build_codebuddy_idea_cards(
+        lang: &str,
+    ) -> (Vec<AccountCard>, Option<String>, Option<String>) {
+        let (cards, _, _) = build_codebuddy_cn_cards(lang);
+        let accounts = modules::codebuddy_cn_account::list_accounts();
+        let current_id = modules::codebuddy_idea::resolve_current_account_id(&accounts)
             .ok()
             .flatten();
         (cards, current_id, None)

@@ -7,6 +7,11 @@
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)。
 
 ---
+## [1.3.62] - 2026-10-04
+
+### 新增
+- **CodeBuddy IDEA 子级平台**：管理并切换 IntelliJ IDEA 等 JetBrains IDE 中 CodeBuddy 插件的登录账号。与 CodeBuddy CN（国内版）共用同一份账号池，读写 IDE 配置目录下的 `options/secret-storage.xml` 登录态（纯 XML，无需系统凭据），支持导入本机当前登录态，并提供与 CodeBuddy VSCode 子级平台一致的账号页、Dashboard 卡片与托盘入口。
+
 ## [1.3.61] - 2026-09-27
 
 ### 新增
